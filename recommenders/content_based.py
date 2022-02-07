@@ -39,25 +39,22 @@ movies = pd.read_csv('./resources/data/movies.csv', sep = ',')
 ratings = pd.read_csv('./resources/data/ratings.csv')
 movies.dropna(inplace=True)
 
-def data_preprocessing(subset_size):
+def data_preprocessing(df):
     """Prepare data for use within Content filtering algorithm.
-
     Parameters
     ----------
     subset_size : int
         Number of movies to use within the algorithm.
-
     Returns
     -------
     Pandas Dataframe
         Subset of movies selected for content-based filtering.
-
     """
+    movies = df.copy()
     # Split genre data into individual words.
     movies['keyWords'] = movies['genres'].str.replace('|', ' ')
-    # Subset of the data
-    movies_subset = movies[:subset_size]
-    return movies_subset
+    movies['genres'] = movies['genres'].apply(str).apply(lambda x: x.split('|'))
+    return movies
 
 # !! DO NOT CHANGE THIS FUNCTION SIGNATURE !!
 # You are, however, encouraged to change its content.  
@@ -69,56 +66,31 @@ def content_model(movie_list,top_n=10):
     ----------
     movie_list : list (str)
         Favorite movies chosen by the app user.
-    top_n : type
-        Number of top recommendations to return to the user.
-
-    Returns
-    -------
-    list (str)
-        Titles of the top-n movie recommendations to the user.
 
     """
-    
-    # Initializing the empty list of recommended movies
-    recommended_movies = []
-    data = data_preprocessing(30000)
+    #global movies
+    # removing the favorite movie list
+    nmovies = data_preprocessing(movies)
+    genre_list = []
+    for i in movie_list:
+        genre_list.append(list(nmovies[nmovies['title']==i]['genres'])[0])
 
-    # Instantiating and generating the count matrix
-    tf_vec = TfidfVectorizer(strip_accents='unicode')
-    tfidf_matrix = tf_vec.fit_transform(data['keyWords'])
-    cos_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
-    indices = pd.Series(data.index, index=data['title']).drop_duplicates()
 
-    def get_rec_list(movie_list, cos_sim=cos_sim):
-        idx = []
-        for titles in movie_list:
-            idx.append(indices[titles])
+    from sklearn.preprocessing import MultiLabelBinarizer
+    mlb2 =  MultiLabelBinarizer()
+    mlb2.fit_transform(genre_list)
+    genre_list = mlb2.classes_
+    nmovies = nmovies[~nmovies['title'].isin(movie_list)]
+    mgen = nmovies
+    for gen in genre_list:
+        mgen = mgen[mgen['keyWords'].str.contains(gen)]
+        if len(mgen)<=top_n:
+            break
 
-        # get the pairwise similarity scores
-        sim_scores1 = list(enumerate(cos_sim[idx[0]]))
-        sim_scores2 = list(enumerate(cos_sim[idx[1]]))
-        sim_scores3 = list(enumerate(cos_sim[idx[2]]))
+        mgen2 = mgen
 
-        # sort movies
-        sim_scores1 = sorted(sim_scores1, key=lambda x: x[1], reverse=True)
-        sim_scores2 = sorted(sim_scores2, key=lambda x: x[1], reverse=True)
-        sim_scores3 = sorted(sim_scores3, key=lambda x: x[1], reverse=True)
 
-        sim_scores = sim_scores1[:10] + sim_scores2[:10] + sim_scores3[:10]
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-
-        # scores of the most similar movies
-        sim_scores = sim_scores[1:20]
-
-        # movies indices
-        movie_indices = [i[0] for i in sim_scores]
-        movie_indices = [i for i in movie_indices if i not in idx]
-
-        # top 10 most similar movies
-        return data['title'].iloc[movie_indices]
-
-    # Store movie names
-    recommended_movies = get_rec_list(movie_list)
-
-    return recommended_movies[:10]
+    asscr = ratings[ratings['movieId'].isin(mgen2['movieId'].values)][['movieId', 'rating']]
+    top_movies = (asscr.groupby(['movieId']).mean().reset_index()).sort_values('rating', ascending =False)[:top_n]
+    return list((nmovies[nmovies['movieId'].isin(top_movies['movieId'].values)]['title']).values)
