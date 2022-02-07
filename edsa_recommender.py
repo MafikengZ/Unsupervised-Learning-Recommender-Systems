@@ -37,6 +37,7 @@ from PIL import Image
 
 #Visualizations
 import base64
+from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import RendererAgg
 from matplotlib.figure import Figure
@@ -59,7 +60,6 @@ imdb_data = pd.read_csv('./resources/data/imdb_data.csv')
 tags = pd.read_csv('./resources/data/tags.csv')
 
 
-
 # App declaration
 def main():
 
@@ -69,7 +69,7 @@ def main():
 
     # DO NOT REMOVE the 'Recommender System' option below, however,
     # you are welcome to add more options to enrich your app.
-    page_options = ["Recommender System","Insights", "Company Information", "Product Information"]
+    page_options = ["Recommender System","Insights", "Company Information", "Product Information, Team Four"]
 
 
     # -------------------------------------------------------------------
@@ -129,16 +129,28 @@ def main():
 
 
     if page_selection == 'Product Information':
-        st.title('Flick Insights')
+        st.write('# Flick Insights')
         st.image('resources/imgs/dots.png', width=50)
-        st.info('Flick Insights is a software as a service(saas) platform used by Cinemas, ecommerce and streaming platform as a recommendation engine, to recommend product to their customers.  Just like Larry Page and Surgey Brim has build the worlds best search engine, at Flick Insights we are bulding recommendation engine, The same way companies like Stripe, PayPal and Square are facilitting payments we are faciitating and influencing the way people interacts with products. ')
+        st.write('### Product Description')
+        st.info('Flick Insights is a software as a service(saas) platform used by Cinemas and movie streaming platforms as a recommendation engine, to recommend product to their customers.')
+        st.info('Just like Google has build the worlds best search engine, at Flick Insights we are bulding the cutting edge recommendation engine tailored at providing users with the best recommended content. The same way companies like Stripe, PayPal and Square are facilitating payments we are faciitating and influencing the way people interacts with products.')
 
+        st.write('### Benefits of using Flick Insights')
+        st.image('resources/imgs/recommendation-system.png',use_column_width=True)
 
+        """* During movie night-out/at the cinema –A group of friends or family can enter a list of their most liked movies into the Self-Service portal at the cinema"""
+        """* The platform will then use Flick Insights API call recommend movies that the user/users will probably like based on the metrics"""
+
+        """ * Increased Sales and convertion due to increased customer retention"""
+        """ * Increased customer satisfaction and new customer attraction due to peer to peer marketing"""
+        """ * Reduced churn, there will be a decrease in number of customers who stop using the product"""
+        """ * Increase customer traffic and loyalty"""
 
 
 
     # You may want to add more sections here for aspects such as an EDA,
     # or to provide your business pitch.
+
 
     if page_selection == "Insights":
 
@@ -146,7 +158,8 @@ def main():
         st.image('resources/imgs/dots.png', width=50)
         st.info("Flick Insights allow users to visualize customer related analystics, as to understand thier online behaviour")
 
-        plotviz = ["Please select", "-- Popular Movie Genres", 
+        plotviz = ["Please select", "-- Popular Movie Genres",
+                "-- Top 20 Movies of All Times",
                 "-- Top 20 Actors in most Movies",
                 "-- Top 20 Directors With Most Movies", 
                 "-- Top 20 Popular Play Plots", "-- Popular Movie Tags"]
@@ -174,9 +187,45 @@ def main():
             st.pyplot(fig1)
             st.write("")
             st.info('Drama and Comedy are the most popular Genres among viewers')
-
-
                     ################# Plot 2 ############
+
+        #if plot_selection == "":
+
+            #Merge movies and train tables
+           # data = pd.merge(train , movies, on = 'movieId')
+
+            # Convert timestamp to year column representing the year the rating was made on merged dataframe
+            #data['rating_year'] = data['timestamp'].apply(lambda timestamp: datetime.fromtimestamp(timestamp).year)
+            #data.drop('timestamp', axis=1, inplace=True)
+
+            # Calculating avarage rating and storing the results as a DataFrame
+           # rating = pd.DataFrame(data.groupby('movieId')['rating'].mean())
+
+            # Calculating total ratings count and storing the results as a DataFrame
+            #rating['ratings_count'] = pd.DataFrame(data.groupby('movieId')['rating'].count())
+            #rating=rating.sort_values(by=['ratings_count','ratings_count'],ascending=False).reset_index()
+
+            # Joining both DataFrames
+            #inner_join = pd.merge(rating,movies,on ='movieId',how ='inner')
+            #popular_movies = inner_join[['title','ratings_count']]
+
+
+            # Plot the figure.
+            #fig2 = Figure(figsize=(17, 12), dpi=85)
+            #ax = fig2.subplots()
+            #ax = popular_movies.plot(kind='barh', color='pink', 
+             #       fontsize=17, xlim=[45, 84], width=.75, alpha=0.8, ax=ax)
+
+            #ax.set_ylabel('title', fontsize=30)
+            #ax.set_xlabel('count', fontsize=30)
+            #ax.set_title('Top 20 Movies of All Times', fontsize=30)
+            #ax.set_yticklabels(y_labels)
+            #st.pyplot(fig2)
+            #st.write("")
+           # st.info('ShawShank and Forest Gump have high ratings count')
+
+
+                    ################# Plot 3 ############
         if plot_selection == "-- Top 20 Actors in most Movies":
             movies_actor = pd.DataFrame(imdb_data[['movieId', 'title_cast']],
                     columns=['movieId', 'title_cast'])
@@ -213,7 +262,7 @@ def main():
             st.info('Popular Actors tend to be featured in most movies')
 
 
-         ################## Plot 3 ################################
+         ################## Plot 4 ################################
         if plot_selection == "-- Top 20 Directors With Most Movies":
 
             # grouping the movies by the director and counting the total number of movies per director
@@ -244,7 +293,7 @@ def main():
             st.write("")
             st.info('Actors and directors are featured in most movies are likely to receive more resources for them to improve on  their craft, and the more people will like their movies')
 
-        ################## Plot 4 ################################
+        ################## Plot 5 ################################
         if plot_selection == "-- Top 20 Popular Play Plots":
 
             movies_plot = pd.DataFrame(imdb_data[['movieId', 'plot_keywords']], columns=[
@@ -276,7 +325,7 @@ def main():
             st.info('The  graph show\'s that people tend to enjoy a movie with certain movie plots, such as love and nudity.')
 
 
-         ###################### Plot 5 ##############################
+         ###################### Plot 6 ##############################
         if plot_selection == "-- Popular Movie Tags":
 
             tags_2 = str(list(tags['tag']))
@@ -296,25 +345,15 @@ def main():
         """ * Flick Insights is a software as a service(saas) platform used by Cinemas and movie streaming platform as a recommendation engine, to recommend movies to their customers"""
     
         """* We charge Cinemas 7.5% per customer based on the price. Movie Streaming platforms are charged R2.50 pay per click model, Flick Insights also provides customer insights through understanding user behaviorial patterns and provides consultancy advice to their clientele"""
-        """* Prices: https://businesstech.co.za/news/media/292592/movie-ticket-prices-in-south-africa-ster-kinekor-vs-nu-metro/"""
+         
+        link='Cinema Prices [link](https://businesstech.co.za/news/media/292592/movie-ticket-prices-in-south-africa-ster-kinekor-vs-nu-metro/")'
+        st.markdown(link,unsafe_allow_html=True)
         st.write("")
-        st.header('Problem Statement')
+        st.write('### Problem Statement')
 
         """* The digital age has brought streaming technology to the shores,with unlimited supply of movies and rising demand for new and exciting content,it can be overwhelming for a user to choose a movie from an unlimited list."""
         """* This can lead to users randomly selecting movies that they might not like or end up not watching it. which reduces customer satisfaction and increases customer churn"""
         """* This can be costly and time consuming for customers to make a choice."""
-
-        st.write("")
-        st.header('Benefits of using Recommender Engine')
-        st.image('resources/imgs/recommendation-system.png',use_column_width=True)
-
-        """* During movie night-out/at the cinema –A group of friends or family can enter a list of their most liked movies into the Watch Me Self-Service platform"""
-        """* The platform will then use recommender algorithms to suggest movies that the user/users will probably like"""
-        st.header('How Will Cinemas Benefit From Using Our Service ')
-        """ * Our platform will ensure that cinema customers watch movies that they would actually like"""
-        """ * This will improve customer experience (People will not feel as if they are being ripped off)"""
-        """ * The better the customer experience, the more likely a customer would return to the cinema or invite a friend"""
-        """ * This would increase customer traffic, and result in a profit increase."""
 
 if __name__ == '__main__':
     main()
