@@ -69,7 +69,7 @@ def main():
 
     # DO NOT REMOVE the 'Recommender System' option below, however,
     # you are welcome to add more options to enrich your app.
-    page_options = ["Recommender System","Insights", "Company Information", "Product Information, Team Four"]
+    page_options = ["Recommender System","Insights", "Company Information", "Product Information"]
 
 
     # -------------------------------------------------------------------
@@ -127,7 +127,6 @@ def main():
     # ------------- SAFE FOR ALTERING/EXTENSION -------------------------
 
 
-
     if page_selection == 'Product Information':
         st.write('# Flick Insights')
         st.image('resources/imgs/dots.png', width=50)
@@ -136,21 +135,19 @@ def main():
         st.info('Just like Google has build the worlds best search engine, at Flick Insights we are bulding the cutting edge recommendation engine tailored at providing users with the best recommended content. The same way companies like Stripe, PayPal and Square are facilitating payments we are faciitating and influencing the way people interacts with products.')
 
         st.write('### Benefits of using Flick Insights')
-        st.image('resources/imgs/recommendation-system.png',use_column_width=True)
+        st.image('resources/imgs/recommendation-system.png',
+                use_column_width=True)
 
         """* During movie night-out/at the cinema –A group of friends or family can enter a list of their most liked movies into the Self-Service portal at the cinema"""
         """* The platform will then use Flick Insights API call recommend movies that the user/users will probably like based on the metrics"""
-
         """ * Increased Sales and convertion due to increased customer retention"""
         """ * Increased customer satisfaction and new customer attraction due to peer to peer marketing"""
         """ * Reduced churn, there will be a decrease in number of customers who stop using the product"""
         """ * Increase customer traffic and loyalty"""
 
 
-
     # You may want to add more sections here for aspects such as an EDA,
     # or to provide your business pitch.
-
 
     if page_selection == "Insights":
 
